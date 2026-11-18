@@ -7,13 +7,13 @@ Landing page de uma página da EDZ Films: pacotes de edição (Reels Express, Co
 ## Páginas
 
 - `index.html`: site completo.
-- `orcamento.html`: landing page de captação com formulário. O formulário não guarda dados: monta a mensagem e abre o WhatsApp. Aceita `?servico=fotos|reels|cortes|captacao|evento` para já marcar o serviço.
+- `orcamento.html`: só redireciona para a landing page de orçamento, que agora fica em outro repositório (elieldnz/edz-orcamento → https://elieldnz.github.io/edz-orcamento/), separada para os anúncios.
 
 ## Editar
 
 Tudo o que muda com frequência fica no bloco `CONFIGURAÇÃO`, no fim do `index.html`:
 
-- `WHATSAPP`: número com DDI e DDD, só dígitos (ex.: `5511999999999`). Fica no `index.html` e no `orcamento.html`: troque nos dois.
+- `WHATSAPP`: número com DDI e DDD, só dígitos (ex.: `5511999999999`). Fica no `index.html` daqui e no `index.html` do repositório edz-orcamento: troque nos dois.
 - `NICHOS`: título, texto, vídeo de capa e playlist de cada segmento
 - `FAIXA` e `SKILLS`: palavras da faixa rolando e das etiquetas
 
