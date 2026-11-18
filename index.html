@@ -93,7 +93,13 @@
   .niche .link{display:inline-block;margin-top:14px;font-weight:600;font-size:14px;color:var(--text);border-bottom:1px solid var(--accent)}
 
   /* galeria de fotos */
-  .gallery{columns:3 280px;column-gap:14px;margin-top:44px}
+  .gfilters{display:flex;flex-wrap:wrap;gap:8px;margin-top:36px}
+  .gfilters button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--muted);font:500 14px Inter,sans-serif;cursor:pointer}
+  .gfilters button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+  .gallery{columns:4 240px;column-gap:14px;margin-top:24px}
+  .gallery button{position:relative}
+  .gallery button span{position:absolute;left:10px;bottom:10px;font-size:12px;font-weight:600;background:rgba(0,0,0,.6);padding:4px 9px;border-radius:999px;color:#fff;opacity:0;transition:opacity .2s}
+  .gallery button:hover span{opacity:1}
   .gallery button{display:block;width:100%;margin:0 0 14px;padding:0;border:0;border-radius:14px;overflow:hidden;cursor:zoom-in;background:#000;break-inside:avoid}
   .gallery img{width:100%;height:auto;transition:transform .5s ease,opacity .3s;opacity:.92}
   .gallery button:hover img{transform:scale(1.04);opacity:1}
@@ -241,7 +247,8 @@
     <div class="wrap">
       <span class="eyebrow">Fotografia</span>
       <h2 class="sec-title">Festas que viram lembrança</h2>
-      <p class="sec-sub">Cobertura fotográfica de aniversários e festas temáticas: retratos, decoração, bolo e a pista cheia. Tudo editado e entregue em galeria.</p>
+      <p class="sec-sub">Cobertura fotográfica de aniversários e festas temáticas: retratos, decoração, mesa de doces e a pista cheia. Tudo editado e entregue em galeria.</p>
+      <div class="gfilters" id="gfilters"></div>
       <div class="gallery" id="gallery"></div>
       <div style="margin-top:32px">
         <a class="btn btn-ghost js-wa" data-msg="Oi Eliel! Quero fotos para o meu evento." href="#">Quero fotos do meu evento →</a>
@@ -393,15 +400,30 @@
   ];
 
   const FOTOS = [
-    ["01-coringa.jpg","Retrato de convidado fantasiado de Coringa"],
-    ["02-grupo.jpg","Família reunida em festa à fantasia"],
-    ["03-bolo.jpg","Bolo prateado com velas de estrela"],
-    ["06-parabens.jpg","Hora do parabéns na festa temática"],
-    ["04-decoracao.jpg","Decoração com balões prateados e mesa do bolo"],
-    ["07-palhaco.jpg","Retrato com maquiagem de palhaço"],
-    ["05-arlequina.jpg","Convidada fantasiada de Arlequina sorrindo"],
-    ["08-casal.jpg","Casal fantasiado de Coringa e Arlequina"],
-    ["09-pista.jpg","Pista de dança cheia na festa à fantasia"]
+    ["01-coringa.jpg","Festa à fantasia","Retrato de convidado fantasiado de Coringa"],
+    ["03-bolo.jpg","Festa à fantasia","Bolo prateado com velas de estrela"],
+    ["04-decoracao.jpg","Festa à fantasia","Decoração com balões prateados e mesa do bolo"],
+    ["07-palhaco.jpg","Festa à fantasia","Retrato com maquiagem de palhaço"],
+    ["08-casal.jpg","Festa à fantasia","Casal fantasiado de Coringa e Arlequina"],
+    ["09-pista.jpg","Festa à fantasia","Pista de dança cheia na festa à fantasia"],
+    ["thalita-36-retrato.jpg","36 anos","Aniversariante com balões de 36 anos ao lado do bolo"],
+    ["thalita-0805.jpg","36 anos","Bolo branco e rosa de 36 anos"],
+    ["thalita-35-baloes.jpg","35 anos","Retrato com balões rosé de 35 anos"],
+    ["thalita-35-retrato.jpg","35 anos","Retrato posado com balões ao fundo"],
+    ["thalita-35-docinhos.jpg","35 anos","Brigadeiros em forminhas rosa"],
+    ["lorena-10-cupcakes.jpg","Tema games","Cupcakes rosa com toppers temáticos"],
+    ["lorena-10-detalhe.jpg","Tema games","Detalhe de cupcake com topper"],
+    ["lorena-10-docinhos.jpg","Tema games","Docinhos na boleira lilás"],
+    ["lorena-11-bolo.jpg","Tema anime","Bolo temático com miniaturas"],
+    ["isabela-12-bolo.jpg","Tema Stitch","Bolo naked de 12 anos com mesa de doces"],
+    ["isabela-12-mesa.jpg","Tema Stitch","Mesa lilás com toppers e doces"],
+    ["isabela-13-bolo.jpg","Tema desenho","Bolo verde de 13 anos"],
+    ["arthur-3-bolo.jpg","Tema dinossauros","Bolo de dois andares com vulcão e dinossauros"],
+    ["arthur-3-ovo.jpg","Tema dinossauros","Ovo gigante de dinossauro na decoração"],
+    ["arthur-3-ovos.jpg","Tema dinossauros","Caixinha de ovos de chocolate na grama"],
+    ["noah-1-mesa.jpg","Tema brinquedos","Mesa decorada com bolo e personagens"],
+    ["noah-1-doces.jpg","Tema brinquedos","Doces modelados em pasta americana"],
+    ["noah-1-convidada.jpg","Tema brinquedos","Retrato espontâneo de convidada"]
   ];
 
   const FAIXA = ["Reels","Cortes de podcast","Comerciais","Tours de imóveis","Videoclipes","Casamentos","Cursos online","Clínicas","Eventos","Legendas dinâmicas"];
@@ -430,14 +452,23 @@
     </a>`).join("");
 
   const gal = document.getElementById("gallery");
-  gal.innerHTML = FOTOS.map(([f,alt],i) => `<button class="reveal" data-i="${i}" aria-label="Ampliar foto: ${alt}"><img loading="lazy" src="img/festa/${f}" alt="${alt}"></button>`).join("");
+  const filt = document.getElementById("gfilters");
+  const temas = ["Todas", ...new Set(FOTOS.map(f => f[1]))];
+  let visiveis = FOTOS.map((_, i) => i);
+  filt.innerHTML = temas.map((t,i) => `<button class="${i?"":"on"}" data-t="${t}">${t}</button>`).join("");
+  const renderGal = t => {
+    visiveis = FOTOS.map((f,i) => (t === "Todas" || f[1] === t) ? i : -1).filter(i => i >= 0);
+    gal.innerHTML = visiveis.map((i,k) => `<button class="reveal in" data-k="${k}" aria-label="Ampliar foto: ${FOTOS[i][2]}"><img loading="lazy" src="img/festa/${FOTOS[i][0]}" alt="${FOTOS[i][2]}"><span>${FOTOS[i][1]}</span></button>`).join("");
+  };
+  filt.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; filt.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); renderGal(b.dataset.t); });
+  renderGal("Todas");
   const lb = document.createElement("div");
   lb.className = "lightbox";
   lb.innerHTML = `<img alt=""><button class="lb-close" aria-label="Fechar">✕</button><button class="lb-prev" aria-label="Anterior">‹</button><button class="lb-next" aria-label="Próxima">›</button>`;
   document.body.appendChild(lb);
   let cur = 0;
-  const show = i => { cur = (i + FOTOS.length) % FOTOS.length; const [f,alt] = FOTOS[cur]; const im = lb.querySelector("img"); im.src = `img/festa/${f}`; im.alt = alt; lb.classList.add("open"); };
-  gal.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.i); });
+  const show = k => { cur = (k + visiveis.length) % visiveis.length; const [f,,alt] = FOTOS[visiveis[cur]]; const im = lb.querySelector("img"); im.src = `img/festa/${f}`; im.alt = alt; lb.classList.add("open"); };
+  gal.addEventListener("click", e => { const b = e.target.closest("button"); if (b) show(+b.dataset.k); });
   lb.addEventListener("click", e => { if (e.target === lb || e.target.classList.contains("lb-close")) lb.classList.remove("open"); });
   lb.querySelector(".lb-prev").onclick = () => show(cur - 1);
   lb.querySelector(".lb-next").onclick = () => show(cur + 1);
