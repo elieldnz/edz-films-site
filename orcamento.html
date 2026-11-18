@@ -394,10 +394,20 @@
       if (id !== buscaId) return;
       if (!geo) { $("#addr").textContent += " · não consegui localizar no mapa; o deslocamento será calculado no WhatsApp."; return; }
       const o = CUSTOS.origem;
-      const rt = await fetch(`https://router.project-osrm.org/route/v1/driving/${o.lon},${o.lat};${geo.lon},${geo.lat}?overview=false`).then(r => r.json());
+      try {
+        const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), 8000);
+        const rt = await fetch(`https://router.project-osrm.org/route/v1/driving/${o.lon},${o.lat};${geo.lon},${geo.lat}?overview=false`, {signal: ctl.signal}).then(r => r.json());
+        clearTimeout(t);
+        if (rt.code === "Ok" && rt.routes[0]) rota = { km: rt.routes[0].distance/1000, min: rt.routes[0].duration/60 };
+      } catch(e) {}
       if (id !== buscaId) return;
-      if (rt.code === "Ok" && rt.routes[0]) rota = { km: rt.routes[0].distance/1000, min: rt.routes[0].duration/60 };
-    } catch(e) { $("#addr").textContent += " · não foi possível calcular a rota agora; calculamos no WhatsApp."; }
+      if (!rota) { // plano B: linha reta x 1,35 (fator médio de estrada na Grande SP)
+        const R = 6371, rad = x => x*Math.PI/180, dLat = rad(geo.lat-o.lat), dLon = rad(geo.lon-o.lon);
+        const a = Math.sin(dLat/2)**2 + Math.cos(rad(o.lat))*Math.cos(rad(geo.lat))*Math.sin(dLon/2)**2;
+        const km = 2*R*Math.asin(Math.sqrt(a)) * 1.35;
+        rota = { km, min: km / 40 * 60, aprox: true };
+      }
+    } catch(e) { $("#addr").textContent += " · não foi possível calcular agora; calculamos no WhatsApp."; }
     render();
   }
 
@@ -418,7 +428,7 @@
     orc = { kmIda:+kmIda.toFixed(1), gasolina, pedagio, almoco:c.almoco, equipamento:c.equipamentoProprio, aluguel, extras, deslocamento:desloc, base, total: base + desloc, pacotes, temSobConsulta };
     const ln = (a,b) => `<div class="ln"><span>${a}</span><b>${b}</b></div>`;
     box.innerHTML =
-      ln(`Distância de ${c.origem.nome}`, `${kmIda.toFixed(1).replace(".",",")} km ida · ${Math.round(rota.min)} min`) +
+      ln(`Distância de ${c.origem.nome}${rota.aprox ? " (aprox.)" : ""}`, `${kmIda.toFixed(1).replace(".",",")} km ida · ${Math.round(rota.min)} min`) +
       ln(`Gasolina ida e volta (${kmTotal.toFixed(0)} km)`, brl(gasolina)) +
       ln("Pedágio estimado", pedagio ? brl(pedagio) : "sem pedágio") +
       ln("Almoço da equipe", brl(c.almoco)) +
