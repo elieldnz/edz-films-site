@@ -182,6 +182,14 @@
     .grid-6,.plans,.steps{grid-template-columns:1fr}
     .hero{padding:72px 0 64px}
   }
+  .vmodal{position:fixed;inset:0;z-index:110;background:rgba(0,0,0,.9);display:none;align-items:center;justify-content:center;padding:20px}
+  .vmodal.open{display:flex}
+  .vmodal .vbox{width:min(1100px,100%);}
+  .vmodal .vframe{position:relative;aspect-ratio:16/9;width:100%;background:#000;border-radius:14px;overflow:hidden}
+  .vmodal iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+  .vmodal .vbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:12px;color:#BFB2A8;font-size:14px}
+  .vmodal .vbar a{color:#BFB2A8}
+  .vmodal .vclose{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.12);border:0;color:#fff;width:48px;height:48px;border-radius:50%;font-size:22px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -240,7 +248,7 @@
     <div class="wrap">
       <span class="eyebrow">Trabalhos</span>
       <h2 class="sec-title">Feito para o seu tipo de negócio</h2>
-      <p class="sec-sub">Escolha o seu segmento e veja projetos reais da EDZ Films. Cada playlist abre direto no YouTube.</p>
+      <p class="sec-sub">Escolha o seu segmento e veja projetos reais da EDZ Films. Toque para assistir aqui mesmo.</p>
       <div class="grid-6" id="niches"></div>
     </div>
   </section>
@@ -453,7 +461,7 @@
   });
 
   document.getElementById("niches").innerHTML = NICHOS.map((n,i) => `
-    <a class="niche reveal" href="https://www.youtube.com/playlist?list=${n.list}" target="_blank" rel="noopener">
+    <a class="niche reveal" href="https://www.youtube.com/playlist?list=${n.list}" data-video="${n.video}" data-title="${n.title}" target="_blank" rel="noopener">
       <div class="thumb">
         <img loading="lazy" src="https://i.ytimg.com/vi/${n.video}/hqdefault.jpg" alt="${n.title}">
         <span class="num">${String(i+1).padStart(2,"0")}</span>
@@ -463,7 +471,7 @@
         <span class="cat">${n.cat}</span>
         <h3>${n.title}</h3>
         <p>${n.text}</p>
-        <span class="link">Ver playlist</span>
+        <span class="link">Assistir aqui</span>
       </div>
     </a>`).join("");
 
@@ -497,6 +505,33 @@
 
   const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), {threshold:.12});
   document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  // ---------- player de vídeo sem sair do site ----------
+  const vm = document.createElement("div");
+  vm.className = "vmodal"; vm.setAttribute("role","dialog"); vm.setAttribute("aria-modal","true"); vm.setAttribute("aria-label","Vídeo");
+  vm.innerHTML = `<button class="vclose" aria-label="Fechar vídeo">✕</button><div class="vbox"><div class="vframe"></div><div class="vbar"><span class="vtit"></span><a class="vyt" target="_blank" rel="noopener">Abrir no YouTube ↗</a></div></div>`;
+  document.body.appendChild(vm);
+  let vVolta = null;
+  const fecharVideo = () => { vm.classList.remove("open"); vm.querySelector(".vframe").innerHTML = ""; document.body.style.overflow = ""; vVolta && vVolta.focus(); };
+  const abrirVideo = (el) => {
+    const u = new URL(el.href), list = u.searchParams.get("list"), v = el.dataset.video || u.searchParams.get("v");
+    if (!list && !v) return false;
+    const src = list
+      ? `https://www.youtube-nocookie.com/embed/${v ? v : "videoseries"}?list=${list}&autoplay=1&rel=0&playsinline=1&modestbranding=1`
+      : `https://www.youtube-nocookie.com/embed/${v}?autoplay=1&rel=0&playsinline=1&modestbranding=1`;
+    vm.querySelector(".vframe").innerHTML = `<iframe src="${src}" title="${el.dataset.title || "Vídeo EDZ Films"}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>`;
+    vm.querySelector(".vtit").textContent = el.dataset.title || "";
+    vm.querySelector(".vyt").href = el.href;
+    vVolta = el; vm.classList.add("open"); document.body.style.overflow = "hidden"; vm.querySelector(".vclose").focus();
+    return true;
+  };
+  document.addEventListener("click", e => {
+    const a = e.target.closest('a[href*="youtube.com/playlist"], a[href*="youtube.com/watch"], a[data-video]');
+    if (!a || vm.contains(a) || e.ctrlKey || e.metaKey || e.shiftKey) return;
+    if (abrirVideo(a)) e.preventDefault();
+  });
+  vm.addEventListener("click", e => { if (e.target === vm || e.target.closest(".vclose")) fecharVideo(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && vm.classList.contains("open")) fecharVideo(); });
 </script>
 </body>
 </html>
