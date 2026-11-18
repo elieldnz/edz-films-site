@@ -19,6 +19,7 @@
     --radius:18px; --max:1180px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
+  [hidden]{display:none!important}
   html{scroll-behavior:smooth}
   body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
   a{color:var(--accent)}
@@ -64,6 +65,13 @@
   input::placeholder,textarea::placeholder{color:#8F817A}
   input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,183,0,.25)}
   [aria-invalid=true]{border-color:var(--err)!important}
+  .addr{font-size:14px;color:var(--muted);min-height:0}
+  .quote{background:rgba(18,17,16,.6);border:1px solid #5A4440;border-radius:14px;padding:16px 18px;display:grid;gap:6px;font-size:14px}
+  .quote .ln{display:flex;justify-content:space-between;gap:12px;color:var(--muted)}
+  .quote .ln b{color:var(--text);font-weight:600;white-space:nowrap}
+  .quote .tot{border-top:1px solid #5A4440;margin-top:6px;padding-top:10px;font-size:16px;color:var(--text)}
+  .quote .tot b{color:var(--accent);font-size:19px;font-family:"Space Grotesk"}
+  .quote small{color:#8F817A;font-size:12px;line-height:1.45}
   .err{font-size:13px;color:var(--err);min-height:0}
   .chips{display:flex;flex-wrap:wrap;gap:8px}
   .chips label{font-weight:500;font-size:14px;cursor:pointer}
@@ -134,8 +142,8 @@
         <div class="prices" aria-label="Preços de referência">
           <div class="price"><span>4 Reels editados</span><b>R$ 600</b></div>
           <div class="price"><span>6 cortes de conteúdo</span><b>R$ 600</b></div>
-          <div class="price"><span>Meia diária com captação</span><b>R$ 1.100</b></div>
-          <div class="price"><span>Fotos de festa</span><b>a partir de R$ 690</b></div>
+          <div class="price"><span>Meia diária com captação</span><b>R$ 1.100 + deslocamento</b></div>
+          <div class="price"><span>Fotos de festa</span><b>R$ 690 + deslocamento</b></div>
         </div>
       </div>
 
@@ -219,15 +227,36 @@
                 </select>
               </div>
             </div>
-            <div class="field">
-              <label for="cidade">Cidade <span class="opt">(para captação ou evento)</span></label>
-              <input id="cidade" name="cidade" type="text" autocomplete="address-level2" placeholder="Ex.: São Paulo, Embu das Artes">
-            </div>
+            <fieldset class="field local" id="local" hidden style="border:0">
+              <legend class="legend">Onde vai ser a captação ou o evento? *</legend>
+              <div class="row">
+                <div class="field">
+                  <label for="cep">CEP *</label>
+                  <input id="cep" name="cep" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="00000-000" aria-describedby="e-cep">
+                  <div class="err" id="e-cep" aria-live="polite"></div>
+                </div>
+                <div class="field">
+                  <label for="numero">Número *</label>
+                  <input id="numero" name="numero" type="text" inputmode="numeric" autocomplete="address-line2" aria-describedby="e-numero">
+                  <div class="err" id="e-numero" aria-live="polite"></div>
+                </div>
+              </div>
+              <p class="addr" id="addr" aria-live="polite"></p>
+              <div class="field">
+                <span class="legend">Precisa de algum equipamento extra?</span>
+                <div class="chips" id="extras">
+                  <label><input type="checkbox" name="extra" value="drone"><span>Drone</span></label>
+                  <label><input type="checkbox" name="extra" value="luz"><span>Iluminação extra</span></label>
+                  <label><input type="checkbox" name="extra" value="cam2"><span>Segunda câmera</span></label>
+                </div>
+              </div>
+              <div class="quote" id="quote" hidden aria-live="polite"></div>
+            </fieldset>
             <div class="field">
               <label for="msg">Conte um pouco do projeto <span class="opt">(opcional)</span></label>
               <textarea id="msg" name="msg" placeholder="Quantos vídeos, duração, referência que você gosta..."></textarea>
             </div>
-            <label class="consent"><input type="checkbox" id="lgpd" name="lgpd" aria-describedby="e-lgpd"> <span>Aceito ser contatado pela EDZ Films pelo WhatsApp para receber este orçamento. Meus dados não são guardados neste site e não serão usados para outra finalidade. *</span></label>
+            <label class="consent"><input type="checkbox" id="lgpd" name="lgpd" aria-describedby="e-lgpd"> <span>Aceito que a EDZ Films registre estes dados na sua planilha de pedidos e me contate pelo WhatsApp sobre este orçamento. Eles não serão usados para outra finalidade, e posso pedir a exclusão a qualquer momento. *</span></label>
             <div class="err" id="e-lgpd" aria-live="polite"></div>
             <button class="btn btn-primary" type="submit">Enviar pelo WhatsApp →</button>
             <p class="note">Ao enviar, abrimos o WhatsApp com seu pedido já escrito. É só tocar em enviar.</p>
@@ -268,9 +297,11 @@
         <div class="step"><h3>Você aprova</h3><p>Prévia com marca d'água; com a aprovação e o saldo, os arquivos finais saem em alta qualidade.</p></div>
       </div>
       <div style="margin-top:48px">
+        <details><summary>E a música dos vídeos?</summary><p>Criamos trilhas originais com o Suno, em plano pago com direito de uso comercial, para o vídeo não ser bloqueado nas redes.</p></details>
         <details><summary>O orçamento é gratuito?</summary><p>Sim. Você só paga se fechar o serviço.</p></details>
-        <details><summary>Os preços acima são fixos?</summary><p>São a base dos pacotes. Projetos com mais vídeos, material muito longo, deslocamento fora da Grande São Paulo ou prazo de urgência podem mudar o valor, sempre combinado antes.</p></details>
-        <details><summary>O que acontece com os meus dados?</summary><p>O formulário só monta a mensagem e abre o WhatsApp. Nada fica guardado neste site. Usamos seu contato apenas para responder este pedido.</p></details>
+        <details><summary>Como é calculado o deslocamento?</summary><p>Para captação e eventos, o formulário calcula pelo seu CEP: gasolina de ida e volta saindo de Embu das Artes, pedágio estimado, almoço da equipe e uso do equipamento. O valor final é confirmado no WhatsApp antes de fechar.</p></details>
+        <details><summary>Os preços acima são fixos?</summary><p>São a base dos pacotes. Projetos com mais vídeos, material muito longo ou prazo de urgência podem mudar o valor, sempre combinado antes.</p></details>
+        <details><summary>O que acontece com os meus dados?</summary><p>Seu pedido é registrado na planilha de orçamentos da EDZ Films e enviado para o WhatsApp. Usamos o contato só para responder este pedido; para apagar seus dados, é só pedir pelo WhatsApp.</p></details>
       </div>
     </div>
   </section>
@@ -286,6 +317,23 @@
 <script>
   /* ===== CONFIGURAÇÃO: mesmo número do index.html ===== */
   const WHATSAPP = "5511952689176";
+  // Link do Apps Script que grava os pedidos na planilha (deixe "" para desligar)
+  const SHEETS_URL = "";
+  // Custos de deslocamento (edite à vontade)
+  const CUSTOS = {
+    origem: { nome: "Embu das Artes", lat: -23.6490, lon: -46.8520 },
+    consumoKmL: 8,          // km por litro do carro
+    gasolinaLitro: 6.40,    // R$ por litro (média SP, ANP nov/2026)
+    pedagioKm: 0.22,        // R$ por km rodado fora da região (rodovias pedagiadas de SP), estimativa
+    kmSemPedagio: 30,       // primeiros km de ida sem pedágio
+    almoco: 45,             // R$ por pessoa, captação/evento
+    equipamentoProprio: 80, // desgaste e seguro do equipamento da EDZ, por saída
+    aluguel: { drone: 250, luz: 150, cam2: 200 }, // equipamento alugado, por diária
+    arredondar: 10          // arredonda o deslocamento para cima
+  };
+  const PACOTES = { "Captação de vídeo": {nome:"Meia diária EDZ", valor:1100}, "Fotos de evento": {nome:"Cobertura de festa (3h)", valor:690}, "Vídeo de evento": {nome:"Vídeo de evento", valor:null} };
+  const NO_LOCAL = ["Captação de vídeo","Fotos de evento","Vídeo de evento"];
+  const EXTRAS_NOME = { drone:"Drone (aluguel)", luz:"Iluminação extra (aluguel)", cam2:"Segunda câmera (aluguel)" };
   /* ==================================================== */
 
   const $ = s => document.querySelector(s);
@@ -296,6 +344,7 @@
   const q = new URLSearchParams(location.search).get("servico");
   if (q && mapa[q]) { const el = document.querySelector(`input[name=servico][value="${mapa[q]}"]`); if (el) el.checked = true; }
 
+  setTimeout(() => toggleLocal(), 0);
   // máscara simples de telefone
   const tel = $("#whats");
   tel.addEventListener("input", () => {
@@ -304,6 +353,83 @@
     else if (d.length > 2) tel.value = `(${d.slice(0,2)}) ${d.slice(2)}`;
     else tel.value = d;
   });
+
+
+  // ---------- calculadora de deslocamento ----------
+  const brl = v => v.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+  let geo = null, rota = null, endereco = null, orc = null, buscaId = 0;
+  const precisaLocal = () => [...document.querySelectorAll("input[name=servico]:checked")].some(i => NO_LOCAL.includes(i.value));
+  const toggleLocal = () => { $("#local").hidden = !precisaLocal(); render(); };
+  document.querySelectorAll("input[name=servico]").forEach(i => i.addEventListener("change", toggleLocal));
+  document.querySelectorAll("input[name=extra]").forEach(i => i.addEventListener("change", render));
+
+  const cep = $("#cep");
+  cep.addEventListener("input", () => {
+    let d = cep.value.replace(/\D/g,"").slice(0,8);
+    cep.value = d.length > 5 ? d.slice(0,5)+"-"+d.slice(5) : d;
+    if (d.length === 8) buscar();
+  });
+  $("#numero").addEventListener("change", () => { if (endereco) buscar(); });
+
+  async function buscar(){
+    const id = ++buscaId, d = cep.value.replace(/\D/g,"");
+    setErr("cep",""); $("#addr").textContent = "Buscando endereço…"; rota = null; render();
+    try {
+      const r = await fetch(`https://viacep.com.br/ws/${d}/json/`).then(r => r.json());
+      if (id !== buscaId) return;
+      if (r.erro) { endereco = null; $("#addr").textContent = ""; setErr("cep","CEP não encontrado."); return; }
+      endereco = r;
+      $("#addr").textContent = `${r.logradouro ? r.logradouro + ", " : ""}${r.bairro ? r.bairro + " · " : ""}${r.localidade}/${r.uf}`;
+      const num = $("#numero").value.trim();
+      const tentativas = [
+        r.logradouro && `street=${encodeURIComponent((num? num+" ":"")+r.logradouro)}&city=${encodeURIComponent(r.localidade)}&state=${r.uf}`,
+        `postalcode=${d.slice(0,5)}-${d.slice(5)}&city=${encodeURIComponent(r.localidade)}&state=${r.uf}`,
+        `city=${encodeURIComponent(r.localidade)}&state=${r.uf}`
+      ].filter(Boolean);
+      geo = null;
+      for (const q of tentativas) {
+        const g = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&${q}`).then(r => r.json()).catch(() => []);
+        if (g && g[0]) { geo = { lat:+g[0].lat, lon:+g[0].lon }; break; }
+      }
+      if (id !== buscaId) return;
+      if (!geo) { $("#addr").textContent += " · não consegui localizar no mapa; o deslocamento será calculado no WhatsApp."; return; }
+      const o = CUSTOS.origem;
+      const rt = await fetch(`https://router.project-osrm.org/route/v1/driving/${o.lon},${o.lat};${geo.lon},${geo.lat}?overview=false`).then(r => r.json());
+      if (id !== buscaId) return;
+      if (rt.code === "Ok" && rt.routes[0]) rota = { km: rt.routes[0].distance/1000, min: rt.routes[0].duration/60 };
+    } catch(e) { $("#addr").textContent += " · não foi possível calcular a rota agora; calculamos no WhatsApp."; }
+    render();
+  }
+
+  function render(){
+    const box = $("#quote");
+    if (!precisaLocal() || !rota) { box.hidden = true; orc = null; return; }
+    const c = CUSTOS, kmIda = rota.km, kmTotal = kmIda*2;
+    const gasolina = kmTotal / c.consumoKmL * c.gasolinaLitro;
+    const pedagio = Math.max(0, kmIda - c.kmSemPedagio) * c.pedagioKm * 2;
+    const extras = [...document.querySelectorAll("input[name=extra]:checked")].map(i => i.value);
+    const aluguel = extras.reduce((t,x) => t + (c.aluguel[x]||0), 0);
+    const bruto = gasolina + pedagio + c.almoco + c.equipamentoProprio + aluguel;
+    const desloc = Math.ceil(bruto / c.arredondar) * c.arredondar;
+    const servs = [...document.querySelectorAll("input[name=servico]:checked")].map(i => i.value).filter(v => PACOTES[v]);
+    const pacotes = servs.map(v => PACOTES[v]);
+    const base = pacotes.reduce((t,p) => t + (p.valor||0), 0);
+    const temSobConsulta = pacotes.some(p => p.valor === null);
+    orc = { kmIda:+kmIda.toFixed(1), gasolina, pedagio, almoco:c.almoco, equipamento:c.equipamentoProprio, aluguel, extras, deslocamento:desloc, base, total: base + desloc, pacotes, temSobConsulta };
+    const ln = (a,b) => `<div class="ln"><span>${a}</span><b>${b}</b></div>`;
+    box.innerHTML =
+      ln(`Distância de ${c.origem.nome}`, `${kmIda.toFixed(1).replace(".",",")} km ida · ${Math.round(rota.min)} min`) +
+      ln(`Gasolina ida e volta (${kmTotal.toFixed(0)} km)`, brl(gasolina)) +
+      ln("Pedágio estimado", pedagio ? brl(pedagio) : "sem pedágio") +
+      ln("Almoço da equipe", brl(c.almoco)) +
+      ln("Uso do equipamento EDZ", brl(c.equipamentoProprio)) +
+      (aluguel ? ln(extras.map(x => EXTRAS_NOME[x]).join(", "), brl(aluguel)) : "") +
+      ln("<b style='color:var(--text)'>Deslocamento</b>", brl(desloc)) +
+      pacotes.map(p => ln(p.nome, p.valor === null ? "sob consulta" : brl(p.valor))).join("") +
+      `<div class="ln tot"><span>Total estimado${temSobConsulta ? " (sem os itens sob consulta)" : ""}</span><b>${brl(base + desloc)}</b></div>` +
+      `<small>Estimativa automática. Pedágio e trânsito podem mudar; o valor final é confirmado no WhatsApp antes de fechar.</small>`;
+    box.hidden = false;
+  }
 
   const setErr = (id, msg, field) => {
     $("#e-" + id).textContent = msg || "";
@@ -324,6 +450,10 @@
     ok = setErr("whats", (fone.length < 10 || fone.length > 11) ? "Digite o WhatsApp com DDD." : "", f.whats) && ok;
     ok = setErr("email", (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) ? "Confira o e-mail." : "", f.email) && ok;
     ok = setErr("servico", servicos.length ? "" : "Escolha pelo menos um serviço.") && ok;
+    if (precisaLocal()) {
+      ok = setErr("cep", f.cep.value.replace(/\D/g,"").length === 8 && endereco ? "" : "Digite um CEP válido.", f.cep) && ok;
+      ok = setErr("numero", f.numero.value.trim() ? "" : "Digite o número.", f.numero) && ok;
+    }
     ok = setErr("lgpd", f.lgpd.checked ? "" : "Marque para podermos responder pelo WhatsApp.", f.lgpd) && ok;
     if (!ok) { const first = f.querySelector('[aria-invalid="true"]') || f.querySelector("input[name=servico]"); first && first.focus(); return; }
 
@@ -338,11 +468,30 @@
       f.segmento.value && `Segmento: ${f.segmento.value}`,
       f.material.value && `Material: ${f.material.value}`,
       dataFmt && `Data/prazo: ${dataFmt}`,
-      f.cidade.value.trim() && `Cidade: ${f.cidade.value.trim()}`,
+      precisaLocal() && endereco && `Local: ${endereco.logradouro ? endereco.logradouro + ", " : ""}${f.numero.value.trim()} · ${endereco.bairro ? endereco.bairro + " · " : ""}${endereco.localidade}/${endereco.uf} · CEP ${f.cep.value}`,
+      orc && `Distância: ${String(orc.kmIda).replace(".",",")} km (ida)`,
+      orc && orc.extras.length && `Equipamento extra: ${orc.extras.map(x => EXTRAS_NOME[x]).join(", ")}`,
+      orc && `Deslocamento estimado: ${brl(orc.deslocamento)} (gasolina ${brl(orc.gasolina)}, pedágio ${brl(orc.pedagio)}, almoço ${brl(orc.almoco)}, equipamento ${brl(orc.equipamento)}${orc.aluguel ? ", aluguel " + brl(orc.aluguel) : ""})`,
+      orc && `Total estimado: ${brl(orc.total)}${orc.temSobConsulta ? " + itens sob consulta" : ""}`,
       f.verba.value && `Investimento: ${f.verba.value}`,
       f.msg.value.trim() && `Projeto: ${f.msg.value.trim()}`
     ].filter(Boolean).join("\n");
 
+    if (SHEETS_URL) {
+      const reg = {
+        nome, whatsapp: f.whats.value, empresa: f.empresa.value.trim(), email,
+        servicos: servicos.join(", "), segmento: f.segmento.value, material: f.material.value,
+        data: dataFmt, investimento: f.verba.value, mensagem: f.msg.value.trim(),
+        cep: precisaLocal() ? f.cep.value : "", numero: precisaLocal() ? f.numero.value.trim() : "",
+        endereco: precisaLocal() && endereco ? `${endereco.logradouro || ""}, ${endereco.bairro || ""}, ${endereco.localidade}/${endereco.uf}` : "",
+        km_ida: orc ? orc.kmIda : "", gasolina: orc ? +orc.gasolina.toFixed(2) : "", pedagio: orc ? +orc.pedagio.toFixed(2) : "",
+        almoco: orc ? orc.almoco : "", equipamento: orc ? orc.equipamento : "", aluguel: orc ? orc.aluguel : "",
+        extras: orc ? orc.extras.map(x => EXTRAS_NOME[x]).join(", ") : "",
+        deslocamento: orc ? orc.deslocamento : "", pacote: orc ? orc.base : "", total: orc ? orc.total : "",
+        origem: location.search.slice(1) || "direto"
+      };
+      fetch(SHEETS_URL, { method:"POST", mode:"no-cors", headers:{"Content-Type":"text/plain;charset=utf-8"}, body: JSON.stringify(reg) }).catch(() => {});
+    }
     const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(linhas)}`;
     $("#waLink").href = url;
     window.open(url, "_blank", "noopener");
