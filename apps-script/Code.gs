@@ -12,7 +12,8 @@ const COLUNAS = [
   ["CEP", r => r.cep], ["Número", r => r.numero], ["Endereço", r => r.endereco], ["Km ida", r => r.km_ida],
   ["Gasolina (R$)", r => r.gasolina], ["Pedágio (R$)", r => r.pedagio], ["Almoço (R$)", r => r.almoco],
   ["Equipamento EDZ (R$)", r => r.equipamento], ["Aluguel (R$)", r => r.aluguel], ["Equipamento extra", r => r.extras],
-  ["Deslocamento (R$)", r => r.deslocamento], ["Pacote (R$)", r => r.pacote], ["Total estimado (R$)", r => r.total],
+  ["Deslocamento (R$)", r => r.deslocamento], ["Pacote (R$)", r => r.pacote],
+  ["Nota fiscal", r => r.nota_fiscal], ["Tributos/emissão NF (R$)", r => r.tributos], ["Total estimado (R$)", r => r.total],
   ["Mensagem", r => r.mensagem], ["Origem", r => r.origem], ["Status", r => "Novo"]
 ];
 
@@ -23,7 +24,8 @@ function doPost(e) {
     const r = JSON.parse(e.postData.contents || "{}");
     if (!r.nome || !r.whatsapp) return out({ ok: false, erro: "dados incompletos" });
     const aba = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
-    if (aba.getLastRow() === 0) aba.appendRow(COLUNAS.map(c => c[0]));
+    // mantém o cabeçalho sempre igual às colunas atuais
+    aba.getRange(1, 1, 1, COLUNAS.length).setValues([COLUNAS.map(c => c[0])]).setFontWeight("bold");
     // evita fórmulas injetadas: texto que começa com = + - @ vira texto
     const limpa = v => (typeof v === "string" && /^[=+\-@]/.test(v)) ? "'" + v : (v === undefined ? "" : v);
     aba.appendRow(COLUNAS.map(c => limpa(c[1](r))));

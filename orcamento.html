@@ -250,8 +250,21 @@
                   <label><input type="checkbox" name="extra" value="cam2"><span>Segunda câmera</span></label>
                 </div>
               </div>
-              <div class="quote" id="quote" hidden aria-live="polite"></div>
             </fieldset>
+            <div class="field">
+              <span class="legend">Precisa de nota fiscal?</span>
+              <div class="chips" id="nfChips">
+                <label><input type="radio" name="nf" value="nao" checked><span>Não preciso</span></label>
+                <label><input type="radio" name="nf" value="cpf"><span>Sim, no CPF</span></label>
+                <label><input type="radio" name="nf" value="cnpj"><span>Sim, no CNPJ</span></label>
+              </div>
+            </div>
+            <div class="field" id="docWrap" hidden>
+              <label for="doc" id="docLbl">CPF para a nota *</label>
+              <input id="doc" name="doc" type="text" inputmode="numeric" aria-describedby="e-doc">
+              <div class="err" id="e-doc" aria-live="polite"></div>
+            </div>
+            <div class="quote" id="quote" hidden aria-live="polite"></div>
             <div class="field">
               <label for="msg">Conte um pouco do projeto <span class="opt">(opcional)</span></label>
               <textarea id="msg" name="msg" placeholder="Quantos vídeos, duração, referência que você gosta..."></textarea>
@@ -300,6 +313,7 @@
         <details><summary>E a música dos vídeos?</summary><p>Criamos trilhas originais com o Suno, em plano pago com direito de uso comercial, para o vídeo não ser bloqueado nas redes.</p></details>
         <details><summary>O orçamento é gratuito?</summary><p>Sim. Você só paga se fechar o serviço.</p></details>
         <details><summary>Como é calculado o deslocamento?</summary><p>Para captação e eventos, o formulário calcula pelo seu CEP: gasolina de ida e volta saindo de Embu das Artes, pedágio estimado, almoço da equipe e uso do equipamento. O valor final é confirmado no WhatsApp antes de fechar.</p></details>
+        <details><summary>Vocês emitem nota fiscal?</summary><p>Sim. A EDZ Films emite nota fiscal de serviço como MEI, no CPF ou no CNPJ. Marque no formulário e o valor da emissão já aparece no total.</p></details>
         <details><summary>Os preços acima são fixos?</summary><p>São a base dos pacotes. Projetos com mais vídeos, material muito longo ou prazo de urgência podem mudar o valor, sempre combinado antes.</p></details>
         <details><summary>O que acontece com os meus dados?</summary><p>Seu pedido é registrado na planilha de orçamentos da EDZ Films e enviado para o WhatsApp. Usamos o contato só para responder este pedido; para apagar seus dados, é só pedir pelo WhatsApp.</p></details>
       </div>
@@ -318,7 +332,7 @@
   /* ===== CONFIGURAÇÃO: mesmo número do index.html ===== */
   const WHATSAPP = "5511952689176";
   // Link do Apps Script que grava os pedidos na planilha (deixe "" para desligar)
-  const SHEETS_URL = "";
+  const SHEETS_URL = "https://script.google.com/macros/s/AKfycbwzFk9KS2B4iCrnid5iuJbRVvk8J19b9yKbipuNQwzY40VhPodgwfSLryMzh-6jOsEK/exec";
   // Custos de deslocamento (edite à vontade)
   const CUSTOS = {
     origem: { nome: "Embu das Artes", lat: -23.6490, lon: -46.8520 },
@@ -331,7 +345,13 @@
     aluguel: { drone: 250, luz: 150, cam2: 200 }, // equipamento alugado, por diária
     arredondar: 10          // arredonda o deslocamento para cima
   };
-  const PACOTES = { "Captação de vídeo": {nome:"Meia diária EDZ", valor:1100}, "Fotos de evento": {nome:"Cobertura de festa (3h)", valor:690}, "Vídeo de evento": {nome:"Vídeo de evento", valor:null} };
+  // Nota fiscal (EDZ Films como MEI). O DAS do MEI é fixo por mês e já inclui o ISS,
+  // então a nota não gera imposto extra. Aqui você escolhe quanto embutir no preço
+  // quando o cliente pede nota:
+  //  - fixo: parte do DAS mensal (R$ 86,05) rateada entre os trabalhos com nota
+  //  - percentual: use se sair do MEI (ex.: 6 no Simples Nacional, Anexo III, faixa inicial)
+  const NOTA = { fixo: 22, percentual: 0, rotulo: "Emissão de nota fiscal (MEI)" };
+  const PACOTES = { "Reels": {nome:"Reels Express", valor:600}, "Cortes de podcast/live": {nome:"Cortes de podcast/live", valor:600}, "Captação de vídeo": {nome:"Meia diária EDZ", valor:1100}, "Fotos de evento": {nome:"Cobertura de festa (3h)", valor:690}, "Vídeo de evento": {nome:"Vídeo de evento", valor:null} };
   const NO_LOCAL = ["Captação de vídeo","Fotos de evento","Vídeo de evento"];
   const EXTRAS_NOME = { drone:"Drone (aluguel)", luz:"Iluminação extra (aluguel)", cam2:"Segunda câmera (aluguel)" };
   /* ==================================================== */
@@ -362,6 +382,31 @@
   const toggleLocal = () => { $("#local").hidden = !precisaLocal(); render(); };
   document.querySelectorAll("input[name=servico]").forEach(i => i.addEventListener("change", toggleLocal));
   document.querySelectorAll("input[name=extra]").forEach(i => i.addEventListener("change", render));
+  const nfTipo = () => (document.querySelector("input[name=nf]:checked") || {}).value || "nao";
+  document.querySelectorAll("input[name=nf]").forEach(i => i.addEventListener("change", () => {
+    const t = nfTipo(); $("#docWrap").hidden = t === "nao";
+    $("#docLbl").textContent = t === "cnpj" ? "CNPJ para a nota *" : "CPF para a nota *";
+    $("#doc").value = ""; setErr("doc",""); render();
+  }));
+  const doc = $("#doc");
+  doc.addEventListener("input", () => {
+    const d = doc.value.replace(/\D/g,"").slice(0, nfTipo() === "cnpj" ? 14 : 11);
+    doc.value = nfTipo() === "cnpj"
+      ? d.replace(/^(\d{2})(\d)/,"$1.$2").replace(/^(\d{2})\.(\d{3})(\d)/,"$1.$2.$3").replace(/\.(\d{3})(\d)/,".$1/$2").replace(/(\d{4})(\d)/,"$1-$2")
+      : d.replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d)/,"$1.$2").replace(/(\d{3})(\d{1,2})$/,"$1-$2");
+  });
+  const digitoOk = (d) => {
+    if (/^(\d)\1+$/.test(d)) return false;
+    if (d.length === 11) {
+      const dv = n => { let s = 0; for (let i = 0; i < n; i++) s += +d[i] * (n + 1 - i); const r = s * 10 % 11; return r === 10 ? 0 : r; };
+      return dv(9) === +d[9] && dv(10) === +d[10];
+    }
+    if (d.length === 14) {
+      const dv = n => { const w = n === 12 ? [5,4,3,2,9,8,7,6,5,4,3,2] : [6,5,4,3,2,9,8,7,6,5,4,3,2]; let s = 0; for (let i = 0; i < n; i++) s += +d[i] * w[i]; const r = s % 11; return r < 2 ? 0 : 11 - r; };
+      return dv(12) === +d[12] && dv(13) === +d[13];
+    }
+    return false;
+  };
 
   const cep = $("#cep");
   cep.addEventListener("input", () => {
@@ -369,11 +414,13 @@
     cep.value = d.length > 5 ? d.slice(0,5)+"-"+d.slice(5) : d;
     if (d.length === 8) buscar();
   });
-  $("#numero").addEventListener("change", () => { if (endereco) buscar(); });
+  // ao mudar o número, refina a rota sem apagar a estimativa atual
+  $("#numero").addEventListener("change", () => { if (endereco) buscar(true); });
 
-  async function buscar(){
+  async function buscar(refinar){
     const id = ++buscaId, d = cep.value.replace(/\D/g,"");
-    setErr("cep",""); $("#addr").textContent = "Buscando endereço…"; rota = null; render();
+    const anterior = refinar ? rota : null;
+    setErr("cep",""); if (!refinar) { $("#addr").textContent = "Buscando endereço…"; rota = null; render(); }
     try {
       const r = await fetch(`https://viacep.com.br/ws/${d}/json/`).then(r => r.json());
       if (id !== buscaId) return;
@@ -401,6 +448,7 @@
         if (rt.code === "Ok" && rt.routes[0]) rota = { km: rt.routes[0].distance/1000, min: rt.routes[0].duration/60 };
       } catch(e) {}
       if (id !== buscaId) return;
+      if (!rota && anterior && !anterior.aprox) rota = anterior;
       if (!rota) { // plano B: linha reta x 1,35 (fator médio de estrada na Grande SP)
         const R = 6371, rad = x => x*Math.PI/180, dLat = rad(geo.lat-o.lat), dLon = rad(geo.lon-o.lon);
         const a = Math.sin(dLat/2)**2 + Math.cos(rad(o.lat))*Math.cos(rad(geo.lat))*Math.sin(dLon/2)**2;
@@ -412,33 +460,40 @@
   }
 
   function render(){
-    const box = $("#quote");
-    if (!precisaLocal() || !rota) { box.hidden = true; orc = null; return; }
-    const c = CUSTOS, kmIda = rota.km, kmTotal = kmIda*2;
-    const gasolina = kmTotal / c.consumoKmL * c.gasolinaLitro;
-    const pedagio = Math.max(0, kmIda - c.kmSemPedagio) * c.pedagioKm * 2;
-    const extras = [...document.querySelectorAll("input[name=extra]:checked")].map(i => i.value);
-    const aluguel = extras.reduce((t,x) => t + (c.aluguel[x]||0), 0);
-    const bruto = gasolina + pedagio + c.almoco + c.equipamentoProprio + aluguel;
-    const desloc = Math.ceil(bruto / c.arredondar) * c.arredondar;
+    const box = $("#quote"), c = CUSTOS, local = precisaLocal();
     const servs = [...document.querySelectorAll("input[name=servico]:checked")].map(i => i.value).filter(v => PACOTES[v]);
     const pacotes = servs.map(v => PACOTES[v]);
+    if (!pacotes.length || (local && !rota)) { box.hidden = true; orc = null; return; }
     const base = pacotes.reduce((t,p) => t + (p.valor||0), 0);
     const temSobConsulta = pacotes.some(p => p.valor === null);
-    orc = { kmIda:+kmIda.toFixed(1), gasolina, pedagio, almoco:c.almoco, equipamento:c.equipamentoProprio, aluguel, extras, deslocamento:desloc, base, total: base + desloc, pacotes, temSobConsulta };
     const ln = (a,b) => `<div class="ln"><span>${a}</span><b>${b}</b></div>`;
-    box.innerHTML =
-      ln(`Distância de ${c.origem.nome}${rota.aprox ? " (aprox.)" : ""}`, `${kmIda.toFixed(1).replace(".",",")} km ida · ${Math.round(rota.min)} min`) +
-      ln(`Gasolina ida e volta (${kmTotal.toFixed(0)} km)`, brl(gasolina)) +
-      ln("Pedágio estimado", pedagio ? brl(pedagio) : "sem pedágio") +
-      ln("Almoço da equipe", brl(c.almoco)) +
-      ln("Uso do equipamento EDZ", brl(c.equipamentoProprio)) +
-      (aluguel ? ln(extras.map(x => EXTRAS_NOME[x]).join(", "), brl(aluguel)) : "") +
-      ln("<b style='color:var(--text)'>Deslocamento</b>", brl(desloc)) +
-      pacotes.map(p => ln(p.nome, p.valor === null ? "sob consulta" : brl(p.valor))).join("") +
-      `<div class="ln tot"><span>Total estimado${temSobConsulta ? " (sem os itens sob consulta)" : ""}</span><b>${brl(base + desloc)}</b></div>` +
-      `<small>Estimativa automática. Pedágio e trânsito podem mudar; o valor final é confirmado no WhatsApp antes de fechar.</small>`;
-    box.hidden = false;
+    let html = "", desloc = 0, d = {};
+    if (local) {
+      const kmIda = rota.km, kmTotal = kmIda*2;
+      const gasolina = kmTotal / c.consumoKmL * c.gasolinaLitro;
+      const pedagio = Math.max(0, kmIda - c.kmSemPedagio) * c.pedagioKm * 2;
+      const extras = [...document.querySelectorAll("input[name=extra]:checked")].map(i => i.value);
+      const aluguel = extras.reduce((t,x) => t + (c.aluguel[x]||0), 0);
+      desloc = Math.ceil((gasolina + pedagio + c.almoco + c.equipamentoProprio + aluguel) / c.arredondar) * c.arredondar;
+      d = { kmIda:+kmIda.toFixed(1), gasolina, pedagio, almoco:c.almoco, equipamento:c.equipamentoProprio, aluguel, extras };
+      html += ln(`Distância de ${c.origem.nome}${rota.aprox ? " (aprox.)" : ""}`, `${kmIda.toFixed(1).replace(".",",")} km ida · ${Math.round(rota.min)} min`) +
+        ln(`Gasolina ida e volta (${kmTotal.toFixed(0)} km)`, brl(gasolina)) +
+        ln("Pedágio estimado", pedagio ? brl(pedagio) : "sem pedágio") +
+        ln("Almoço da equipe", brl(c.almoco)) +
+        ln("Uso do equipamento EDZ", brl(c.equipamentoProprio)) +
+        (aluguel ? ln(extras.map(x => EXTRAS_NOME[x]).join(", "), brl(aluguel)) : "") +
+        ln("<b style='color:var(--text)'>Deslocamento</b>", brl(desloc));
+    }
+    const sub = base + desloc;
+    // tributo embutido "por dentro": o valor da nota já cobre o percentual sobre ela mesma
+    const nota = nfTipo() !== "nao";
+    const tributos = nota ? Math.ceil((sub + NOTA.fixo) / (1 - NOTA.percentual/100) - sub) : 0;
+    orc = { ...d, deslocamento: local ? desloc : "", base, tributos, nota: nota ? nfTipo().toUpperCase() : "Não", total: sub + tributos, pacotes, temSobConsulta, local };
+    html += pacotes.map(p => ln(p.nome, p.valor === null ? "sob consulta" : brl(p.valor))).join("") +
+      (nota ? ln(NOTA.rotulo + (NOTA.percentual ? ` (${String(NOTA.percentual).replace(".",",")}%)` : ""), brl(tributos)) : "") +
+      `<div class="ln tot"><span>Total estimado${nota ? " com nota" : ""}${temSobConsulta ? " (sem os itens sob consulta)" : ""}</span><b>${brl(orc.total)}</b></div>` +
+      `<small>${local ? "Estimativa automática. Pedágio e trânsito podem mudar; o" : "O"} valor final é confirmado no WhatsApp antes de fechar.${nota ? " Nota fiscal de serviço emitida pela EDZ Films (MEI)." : ""}</small>`;
+    box.innerHTML = html; box.hidden = false;
   }
 
   const setErr = (id, msg, field) => {
@@ -464,6 +519,10 @@
       ok = setErr("cep", f.cep.value.replace(/\D/g,"").length === 8 && endereco ? "" : "Digite um CEP válido.", f.cep) && ok;
       ok = setErr("numero", f.numero.value.trim() ? "" : "Digite o número.", f.numero) && ok;
     }
+    if (nfTipo() !== "nao") {
+      const d = f.doc.value.replace(/\D/g,"");
+      ok = setErr("doc", digitoOk(d) && d.length === (nfTipo() === "cnpj" ? 14 : 11) ? "" : `Confira o ${nfTipo().toUpperCase()}.`, f.doc) && ok;
+    }
     ok = setErr("lgpd", f.lgpd.checked ? "" : "Marque para podermos responder pelo WhatsApp.", f.lgpd) && ok;
     if (!ok) { const first = f.querySelector('[aria-invalid="true"]') || f.querySelector("input[name=servico]"); first && first.focus(); return; }
 
@@ -479,10 +538,12 @@
       f.material.value && `Material: ${f.material.value}`,
       dataFmt && `Data/prazo: ${dataFmt}`,
       precisaLocal() && endereco && `Local: ${endereco.logradouro ? endereco.logradouro + ", " : ""}${f.numero.value.trim()} · ${endereco.bairro ? endereco.bairro + " · " : ""}${endereco.localidade}/${endereco.uf} · CEP ${f.cep.value}`,
-      orc && `Distância: ${String(orc.kmIda).replace(".",",")} km (ida)`,
-      orc && orc.extras.length && `Equipamento extra: ${orc.extras.map(x => EXTRAS_NOME[x]).join(", ")}`,
-      orc && `Deslocamento estimado: ${brl(orc.deslocamento)} (gasolina ${brl(orc.gasolina)}, pedágio ${brl(orc.pedagio)}, almoço ${brl(orc.almoco)}, equipamento ${brl(orc.equipamento)}${orc.aluguel ? ", aluguel " + brl(orc.aluguel) : ""})`,
-      orc && `Total estimado: ${brl(orc.total)}${orc.temSobConsulta ? " + itens sob consulta" : ""}`,
+      orc && orc.local && `Distância: ${String(orc.kmIda).replace(".",",")} km (ida)`,
+      orc && orc.local && orc.extras.length && `Equipamento extra: ${orc.extras.map(x => EXTRAS_NOME[x]).join(", ")}`,
+      orc && orc.local && `Deslocamento estimado: ${brl(orc.deslocamento)} (gasolina ${brl(orc.gasolina)}, pedágio ${brl(orc.pedagio)}, almoço ${brl(orc.almoco)}, equipamento ${brl(orc.equipamento)}${orc.aluguel ? ", aluguel " + brl(orc.aluguel) : ""})`,
+      nfTipo() !== "nao" && `Nota fiscal: sim, no ${nfTipo().toUpperCase()} ${f.doc.value}`,
+      orc && orc.tributos && `${NOTA.rotulo}: ${brl(orc.tributos)}`,
+      orc && `Total estimado${nfTipo() !== "nao" ? " com nota" : ""}: ${brl(orc.total)}${orc.temSobConsulta ? " + itens sob consulta" : ""}`,
       f.verba.value && `Investimento: ${f.verba.value}`,
       f.msg.value.trim() && `Projeto: ${f.msg.value.trim()}`
     ].filter(Boolean).join("\n");
@@ -494,9 +555,10 @@
         data: dataFmt, investimento: f.verba.value, mensagem: f.msg.value.trim(),
         cep: precisaLocal() ? f.cep.value : "", numero: precisaLocal() ? f.numero.value.trim() : "",
         endereco: precisaLocal() && endereco ? `${endereco.logradouro || ""}, ${endereco.bairro || ""}, ${endereco.localidade}/${endereco.uf}` : "",
-        km_ida: orc ? orc.kmIda : "", gasolina: orc ? +orc.gasolina.toFixed(2) : "", pedagio: orc ? +orc.pedagio.toFixed(2) : "",
-        almoco: orc ? orc.almoco : "", equipamento: orc ? orc.equipamento : "", aluguel: orc ? orc.aluguel : "",
-        extras: orc ? orc.extras.map(x => EXTRAS_NOME[x]).join(", ") : "",
+        km_ida: orc && orc.local ? orc.kmIda : "", gasolina: orc && orc.local ? +orc.gasolina.toFixed(2) : "", pedagio: orc && orc.local ? +orc.pedagio.toFixed(2) : "",
+        almoco: orc && orc.local ? orc.almoco : "", equipamento: orc && orc.local ? orc.equipamento : "", aluguel: orc && orc.local ? orc.aluguel : "",
+        extras: orc && orc.local ? orc.extras.map(x => EXTRAS_NOME[x]).join(", ") : "",
+        nota_fiscal: nfTipo() === "nao" ? "Não" : `${nfTipo().toUpperCase()} ${f.doc.value}`, tributos: orc ? orc.tributos : "",
         deslocamento: orc ? orc.deslocamento : "", pacote: orc ? orc.base : "", total: orc ? orc.total : "",
         origem: location.search.slice(1) || "direto"
       };
