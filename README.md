@@ -28,3 +28,10 @@ Preços e textos dos pacotes estão direto no HTML, na seção `id="pacotes"` e 
 ## Ver localmente
 
 Abra o `index.html` (site) ou o `orcamento.html` (landing page de orçamento) no navegador, ou rode `python3 -m http.server` na pasta.
+
+## Biblioteca (link da bio do Instagram)
+- `biblioteca.html`: lista de guias, roteiros e prompts com busca pela palavra falada no Reel ("Comentou LUZ? Está aqui").
+  Link direto com busca: `biblioteca.html?q=luz`.
+- `guia.html?g=<slug>`: página de cada guia.
+- `guias.js`: o conteúdo. Para publicar um guia novo, copie um bloco, troque os campos e faça o commit.
+- Configure `INSTAGRAM` no fim de `biblioteca.html`. Quem pede os guias no WhatsApp entra na planilha de pedidos com origem "biblioteca".

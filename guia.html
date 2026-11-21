@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Guia · Biblioteca EDZ Films</title>
+<meta name="theme-color" content="#121110">
+<link rel="icon" href="img/icone.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#121110;--bg2:#2A0E16;--card:#1F1A18;--line:#3A2C2A;--ink:#121110;--text:#F3EFE6;--muted:#BFB2A8;--accent:#F5B700}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:Inter,system-ui,sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  h1,h2{font-family:"Space Grotesk",Inter,sans-serif;line-height:1.1;letter-spacing:-.02em}
+  header{border-bottom:1px solid var(--line)}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;height:64px}
+  header a.back{color:var(--muted);text-decoration:none;font-size:15px}
+  .wrap{max-width:760px;margin:0 auto;padding:0 22px}
+  .head{background:linear-gradient(160deg,#2a1c1a,var(--bg2));border-bottom:1px solid var(--line)}
+  .head .wrap{padding-top:44px;padding-bottom:40px}
+  .meta{display:flex;gap:10px;flex-wrap:wrap;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .meta .tag{background:var(--accent);color:var(--ink);border-radius:999px;padding:2px 10px;font-weight:700;letter-spacing:.04em}
+  .head h1{font-size:clamp(32px,5.4vw,52px);margin:16px 0 14px}
+  .head p{color:var(--muted);font-size:18px}
+  article{padding:36px 0 20px;font-size:18px}
+  article p,article ul,article ol,article .box,article .prompt{margin-bottom:20px}
+  article h2{font-size:26px;margin:34px 0 10px}
+  article ul,article ol{padding-left:24px}
+  article li{margin-bottom:8px}
+  article b{color:#fff}
+  .box{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:14px;padding:18px 20px;font-size:17px}
+  .prompt{position:relative;background:#0b0a09;border:1px solid var(--line);border-radius:14px}
+  .prompt pre{white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.6;padding:20px;padding-top:52px;color:#e8e2d8}
+  .prompt .copy{position:absolute;top:12px;right:12px;background:var(--accent);color:var(--ink);border:0;border-radius:999px;padding:6px 16px;font-weight:700;cursor:pointer;font:inherit;font-size:14px}
+  .cta{background:var(--bg2);border-radius:20px;padding:28px;margin:30px 0 20px;display:flex;justify-content:space-between;gap:20px;align-items:center;flex-wrap:wrap}
+  .cta h2{font-size:26px;margin-bottom:6px}
+  .cta p{color:var(--muted)}
+  .btn{background:var(--accent);color:var(--ink);border-radius:999px;padding:12px 22px;font-weight:700;text-decoration:none;white-space:nowrap}
+  .more{padding:10px 0 50px}
+  .more h2{font-size:22px;margin-bottom:14px}
+  .more a{display:block;border-top:1px solid var(--line);padding:14px 0;color:var(--text);text-decoration:none}
+  .more a span{color:var(--accent);font-family:"Space Grotesk";font-weight:700;margin-right:10px}
+  .share{display:flex;gap:10px;margin-top:20px}
+  .share button,.share a{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:999px;padding:8px 16px;cursor:pointer;font:inherit;font-size:14px;text-decoration:none}
+  .notfound{padding:80px 0;text-align:center}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <a href="biblioteca.html"><img src="img/logo.svg" alt="EDZ Films" height="34"></a>
+  <a class="back" href="biblioteca.html">← Biblioteca</a>
+</div></header>
+<main id="main"></main>
+
+<script src="guias.js"></script>
+<script>
+  const G = window.GUIAS || [];
+  const slug = new URLSearchParams(location.search).get("g");
+  const g = G.find(x => x.slug === slug);
+  const main = document.getElementById("main");
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  if (!g) {
+    main.innerHTML = `<div class="wrap notfound"><h1>Guia não encontrado</h1><p style="margin-top:12px"><a href="biblioteca.html">Voltar para a biblioteca</a></p></div>`;
+  } else {
+    document.title = g.titulo + " · Biblioteca EDZ Films";
+    const meta = document.createElement("meta"); meta.name = "description"; meta.content = g.resumo; document.head.appendChild(meta);
+    const outros = G.filter(x => x !== g).sort((a, b) => (b.tema === g.tema) - (a.tema === g.tema)).slice(0, 4);
+    main.innerHTML = `
+      <section class="head"><div class="wrap">
+        <div class="meta"><span class="tag">${esc(g.formato)}</span><span>${esc(g.tema)}</span><span>${esc(g.data)}</span></div>
+        <h1>${esc(g.titulo)}</h1>
+        <p>${esc(g.resumo)}</p>
+        <div class="share"><button type="button" id="share">Compartilhar</button><a href="https://wa.me/?text=${encodeURIComponent(g.titulo + " " + location.href)}">Mandar no WhatsApp</a></div>
+      </div></section>
+      <div class="wrap">
+        <article>${g.conteudo}</article>
+        <div class="cta"><div><h2>Quer o vídeo pronto?</h2><p>Eu gravo, edito e entrego. Orçamento na hora, pelo WhatsApp.</p></div>
+          <a class="btn" href="https://elieldnz.github.io/edz-orcamento/?utm_source=biblioteca&utm_content=${g.slug}">Pedir orçamento</a></div>
+        <div class="more"><h2>Leia também</h2>${outros.map(o => `<a href="guia.html?g=${o.slug}"><span>${esc(o.palavra)}</span>${esc(o.titulo)}</a>`).join("")}</div>
+      </div>`;
+    main.querySelectorAll(".prompt .copy").forEach(b => b.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(b.nextElementSibling.textContent); b.textContent = "Copiado!"; }
+      catch (e) { b.textContent = "Selecione e copie"; }
+      setTimeout(() => b.textContent = "Copiar", 2000);
+    }));
+    document.getElementById("share").addEventListener("click", async () => {
+      if (navigator.share) { try { await navigator.share({ title: g.titulo, url: location.href }); } catch (e) {} }
+      else { try { await navigator.clipboard.writeText(location.href); document.getElementById("share").textContent = "Link copiado!"; } catch (e) {} }
+    });
+  }
+</script>
+</body>
+</html>
