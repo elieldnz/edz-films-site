@@ -12,11 +12,13 @@ window.GUIAS = [
 <p>Com a janela atrás de você, o celular expõe para o céu e o seu rosto fica escuro. Vire o corpo até a janela ficar a uns 45° do seu rosto, de um lado. A luz desenha o rosto e dá profundidade.</p>
 <h2>2. Luz indireta é melhor que sol</h2>
 <p>Sol batendo direto cria sombra dura e faz apertar os olhos. Prefira janela sem sol direto, dia nublado ou cortina fina na frente.</p>
-<h2>3. O truque do papel branco</h2>
+<h2>3. A hora do dia certa</h2>
+<p>Grave de manhã (até umas 10h) ou no fim da tarde (depois das 16h). A luz vem mais baixa e mais suave e entra melhor pela janela. Perto do meio-dia ela fica dura e vem de cima. Se a janela pega sol direto nesse horário, espere passar ou feche a cortina fina.</p>
+<h2>4. O truque do papel branco</h2>
 <p>O lado do rosto oposto à janela fica escuro. Coloque uma cartolina branca, um isopor ou até uma camiseta branca desse lado, fora do quadro. Ela rebate a luz e suaviza a sombra.</p>
-<h2>4. Apague a luz do teto</h2>
+<h2>5. Apague a luz do teto</h2>
 <p>Lâmpada amarela misturada com a luz do dia deixa a pele com duas cores. Com a janela, apague a luz da sala.</p>
-<div class="box"><b>Checklist antes de gravar:</b> janela de lado · sem sol direto · rebatedor branco do outro lado · luz do teto apagada · lente do celular limpa.</div>`
+<div class="box"><b>Checklist antes de gravar:</b> janela de lado · manhã ou fim de tarde · sem sol direto · rebatedor branco do outro lado · luz do teto apagada · lente do celular limpa.</div>`
 },
 {
   slug: "audio-limpo", palavra: "ÁUDIO", formato: "Guia", tema: "Áudio", data: "nov/26", novo: true,
@@ -29,7 +31,7 @@ window.GUIAS = [
 <h2>2. Escolha o cômodo certo</h2>
 <p>Sala vazia e banheiro fazem eco. Quarto com cama, cortina e tapete absorve o som. Desligue ventilador e ar-condicionado durante a gravação.</p>
 <h2>3. Microfone de lapela</h2>
-<p>Um lapela sem fio simples (na faixa de R$ 80 a R$ 200) muda o nível do vídeo. Prenda no peito, a um palmo da boca, longe do colar e do cabelo.</p>
+<p>Um microfone de lapela sem fio, desses que conectam direto no celular, muda o nível do vídeo e os modelos de entrada custam pouco. Prenda no peito, a um palmo da boca, longe do colar e do cabelo. Antes de comprar, confira se ele encaixa na entrada do seu celular (USB-C ou Lightning).</p>
 <h2>4. Grave 5 segundos de teste</h2>
 <p>Antes do take valendo, grave 5 segundos e escute com fone. Se tiver chiado, eco ou barulho de roupa, ajuste agora. Consertar depois é muito mais difícil.</p>
 <div class="box">Vai gravar entrevista, podcast ou evento? A EDZ leva microfones próprios na captação. <a href="https://elieldnz.github.io/edz-orcamento/?servico=captacao">Peça um orçamento</a>.</div>`
@@ -52,6 +54,15 @@ window.GUIAS = [
 <li>"Você está [fazendo algo] do jeito errado. Faz assim."</li>
 <li>"Um dia normal na [nome do negócio] em 30 segundos."</li>
 </ol>
+<h2>Como adaptar para o seu negócio</h2>
+<p>Pegue o modelo e troque cada colchete por algo bem específico do seu dia a dia. Quanto mais concreto, melhor:</p>
+<ul>
+<li><b>Salão:</b> "Pare de lavar o cabelo todo dia se você quer o liso durar mais."</li>
+<li><b>Hamburgueria:</b> "Por que o nosso smash custa R$ 32? Vou te mostrar."</li>
+<li><b>Loja de roupa:</b> "3 peças que eu levaria se tivesse só R$ 200 aqui na loja."</li>
+<li><b>Prestador de serviço:</b> "Antes e depois de uma limpeza de sofá em 15 segundos."</li>
+</ul>
+<p>Escreva 3 versões do mesmo gancho, grave as 3 e poste a que soar mais natural na sua voz.</p>
 <h2>A imagem também é gancho</h2>
 <p>Comece no meio da ação: a massa caindo na frigideira, a tesoura cortando, o produto sendo aberto. Nada de começar com "Oi, gente, tudo bem?".</p>
 <div class="box"><b>Teste rápido:</b> assista só os 3 primeiros segundos sem som. Se não der vontade de ver o resto, troque o gancho.</div>`
@@ -85,11 +96,12 @@ window.GUIAS = [
   resumo: "Comentou CÂMERA? Está aqui: resolução, quadros por segundo, travar foco e exposição e por que limpar a lente muda tudo. Vale para iPhone e Android.",
   conteudo: `
 <h2>1. Resolução e quadros</h2>
-<p>Grave em <b>4K a 30 qps</b> (ou 1080p a 30 se faltar espaço). Para câmera lenta de produto, 60 qps. Evite mudar no meio de uma mesma gravação.</p>
+<p>Grave em <b>4K a 30 qps</b> (ou 1080p a 30 se faltar espaço). Para câmera lenta de produto, 60 qps. Use o mesmo ajuste em todas as cenas de um vídeo.</p>
+<p><b>No iPhone:</b> Ajustes › Câmera › Gravar Vídeo. <b>No Android:</b> abra a câmera, modo Vídeo, e toque no ícone de resolução no topo da tela (o nome muda conforme a marca). Dica: 4K ocupa uns 350 MB por minuto, então libere espaço antes.</p>
 <h2>2. Câmera de trás</h2>
 <p>A câmera traseira é muito melhor que a frontal. Use a de trás e um espelho ou a tela de outro celular para se enquadrar.</p>
 <h2>3. Trave foco e exposição</h2>
-<p>Toque e segure no seu rosto até aparecer "AE/AF bloqueado" (iPhone) ou o cadeado (Android). Assim a imagem não fica clareando e escurecendo.</p>
+<p>Toque e segure no seu rosto até aparecer "Bloqueio AE/AF" (iPhone) ou o cadeado (em muitos Android). Assim a imagem não fica clareando e escurecendo enquanto você se mexe. Se precisar, arraste o sol ao lado do quadrado para clarear ou escurecer.</p>
 <h2>4. Celular em pé e na altura dos olhos</h2>
 <p>Para Reels, vertical sempre. Lente na altura dos olhos, nunca de baixo para cima.</p>
 <h2>5. Limpe a lente</h2>
@@ -112,7 +124,7 @@ window.GUIAS = [
 <p>Deixe alguém anotando o minuto de cada momento bom. Isso economiza horas na edição.</p>
 <h2>Formato que segura</h2>
 <p>Vertical 9:16, legenda grande no centro, corte a cada 2 ou 3 segundos e o melhor momento logo no começo.</p>
-<div class="box">A EDZ faz <b>6 cortes de até 60s por R$ 600</b> a partir de até 90 minutos de material. <a href="https://elieldnz.github.io/edz-orcamento/?servico=cortes">Pedir orçamento</a>.</div>`
+<div class="box">A EDZ faz <b>6 cortes verticais de até 60s, com legendas dinâmicas, por R$ 600</b>, a partir de até 90 minutos de material, com entrega em até 72h. <a href="https://elieldnz.github.io/edz-orcamento/?servico=cortes">Pedir orçamento</a>.</div>`
 },
 {
   slug: "o-que-fotografar-na-festa", palavra: "FESTA", formato: "Guia", tema: "Festas", data: "out/26",
@@ -127,11 +139,12 @@ window.GUIAS = [
 <li>Doces nas forminhas, de cima e de lado.</li>
 <li>Toppers, personagens e lembrancinhas.</li>
 <li>Painel e balões sem ninguém na frente.</li>
+<li>Detalhes que a decoradora e a confeiteira vão querer usar: plaquinha com o nome, arranjos, texturas do bolo. Mande para elas marcando o perfil, é divulgação para os dois lados.</li>
 </ul>
 <h2>Durante</h2>
 <ul><li>Convidados chegando, abraços, crianças brincando.</li><li>Família com o aniversariante na mesa.</li></ul>
 <h2>Parabéns</h2>
-<p>Fique na frente da mesa, um pouco acima. Faça a foto da vela acesa, do sopro e da reação.</p>
+<p>Fique na frente da mesa, um pouco acima. Faça a foto da vela acesa, do sopro e da reação. Peça para apagarem a luz do teto só se houver outra luz no rosto; senão, a foto fica escura e granulada.</p>
 <p>Veja como ficam as fotos de decoração na <a href="https://elieldnz.github.io/edz-films-site/#fotos">galeria de festas da EDZ</a>.</p>`
 },
 {
@@ -142,11 +155,11 @@ window.GUIAS = [
 <ol>
 <li><b>O prato saindo:</b> do pedido ao prato na mesa em 15s. Gancho: "Do fogo pra sua mesa em 15 segundos."</li>
 <li><b>Bastidores da abertura:</b> a cozinha às 10h. Gancho: "O que acontece aqui antes de você chegar."</li>
-<li><b>Reação do cliente:</b> a primeira mordida. Peça autorização antes.</li>
-<li><b>Quem faz:</b> 20 segundos com o cozinheiro contando o prato favorito dele.</li>
+<li><b>Reação do cliente:</b> a primeira mordida. Peça autorização antes de gravar e de postar (um "pode sim" gravado no próprio vídeo já ajuda). Gancho: "A cara de quem prova pela primeira vez."</li>
+<li><b>Quem faz:</b> 20 segundos com o cozinheiro contando o prato favorito dele. Gancho: "O prato que o nosso chef come no almoço."</li>
 <li><b>Promoção do dia:</b> o prato + preço + até que horas. Chamada direta.</li>
 </ol>
-<div class="box"><b>Dica:</b> grave tudo num dia e poste um por dia. Consistência vale mais que vídeo perfeito.</div>`
+<div class="box"><b>Dica:</b> grave tudo num dia e poste um por dia. Consistência vale mais que vídeo perfeito. Para escrever cada um, use o <a href="guia.html?g=roteiro-5-linhas">roteiro em 5 linhas</a>.</div>`
 },
 {
   slug: "prompt-legenda", palavra: "LEGENDA", formato: "Prompt", tema: "IA", data: "out/26",
