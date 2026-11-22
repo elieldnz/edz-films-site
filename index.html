@@ -111,6 +111,9 @@
   .gfilters button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--bg2);color:var(--muted);font:500 14px Inter,sans-serif;cursor:pointer}
   .gfilters button.on{background:var(--accent);border-color:var(--accent);color:var(--ink)}
   .gallery{columns:4 240px;column-gap:14px;margin-top:24px}
+  .gmais{display:block;margin:10px auto 0}
+  .gmais[hidden]{display:none}
+  @media (max-width:700px){.gallery{columns:2;column-gap:8px}.gallery button{margin-bottom:8px;border-radius:10px}.gfilters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px}.gfilters button{white-space:nowrap}}
   .gallery button{position:relative}
   .gallery button span{position:absolute;left:10px;bottom:10px;font-size:12px;font-weight:600;background:rgba(0,0,0,.6);padding:4px 9px;border-radius:999px;color:#fff;opacity:0;transition:opacity .2s}
   .gallery button:hover span{opacity:1}
@@ -406,9 +409,9 @@
   <!-- CTA FINAL -->
   <section class="final">
     <div class="wrap">
-      <span class="eyebrow">Vagas desta semana</span>
-      <h2>Aquele vídeo parado no seu celular pode estar no ar até sexta.</h2>
-      <p>Chama no WhatsApp e reserve uma das vagas da semana.</p>
+      <span class="eyebrow">Orçamento em 1 minuto</span>
+      <h2>Aquele vídeo parado no seu celular pode estar no ar em 48h.</h2>
+      <p>Preencha o pedido e receba o valor com o deslocamento já calculado, ou chame direto no WhatsApp (11) 95268-9176.</p>
       <a class="btn btn-primary" href="https://elieldnz.github.io/edz-orcamento/">Pedir meu orçamento →</a>
     </div>
   </section>
@@ -537,10 +540,19 @@
   const temas = ["Todas", ...new Set(FOTOS.map(f => f[1]))];
   let visiveis = FOTOS.map((_, i) => i);
   filt.innerHTML = temas.map((t,i) => `<button class="${i?"":"on"}" data-t="${t}">${t}</button>`).join("");
+  let tudo = false;
   const renderGal = t => {
     visiveis = FOTOS.map((f,i) => (t === "Todas" || f[1] === t) ? i : -1).filter(i => i >= 0);
+    // em "Todas", mostra 1 foto de cada festa até a pessoa pedir o resto
+    if (t === "Todas" && !tudo) { const vistos = new Set(); visiveis = visiveis.filter(i => !vistos.has(FOTOS[i][1]) && vistos.add(FOTOS[i][1])); }
+    gmais.hidden = !(t === "Todas" && !tudo);
     gal.innerHTML = visiveis.map((i,k) => `<button class="reveal in" data-k="${k}" aria-label="Ampliar foto: ${FOTOS[i][2]}"><img loading="lazy" src="img/festa/${FOTOS[i][0]}" alt="${FOTOS[i][2]}"><span>${FOTOS[i][1]}</span></button>`).join("");
   };
+  const gmais = document.createElement("button");
+  gmais.className = "btn btn-ghost gmais"; gmais.type = "button";
+  gmais.textContent = `Ver todas as ${FOTOS.length} fotos`;
+  gal.after(gmais);
+  gmais.addEventListener("click", () => { tudo = true; renderGal("Todas"); });
   filt.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; filt.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); renderGal(b.dataset.t); });
   renderGal("Todas");
   const lb = document.createElement("div");
