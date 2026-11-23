@@ -181,9 +181,42 @@
   .wa-float{position:fixed;right:22px;bottom:22px;z-index:60;width:60px;height:60px;border-radius:50%;background:#25d366;display:grid;place-items:center;box-shadow:0 10px 30px -8px rgba(37,211,102,.7)}
   .wa-float svg{width:30px;height:30px;fill:#fff}
 
-  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+  /* ---------- movimento (curvas suaves, nunca linear) ---------- */
+  :root{--e-out:cubic-bezier(.16,1,.3,1);--e-inout:cubic-bezier(.83,0,.17,1);--e-spring:cubic-bezier(.34,1.56,.64,1)}
+  .reveal{opacity:0;transform:translateY(28px) scale(.97);transition:opacity .8s var(--e-out),transform .9s var(--e-out);transition-delay:var(--d,0ms)}
   .reveal.in{opacity:1;transform:none}
-  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none}.marquee-track{animation:none}}
+  .btn{transition:transform .35s var(--e-spring),box-shadow .35s var(--e-out),background .25s}
+  .btn:active{transform:scale(.96)}
+  .btn-ghost:hover{transform:translateY(-2px)}
+  .niche,.plan,.stat,.step,.sells li{transition:transform .45s var(--e-out),border-color .3s,box-shadow .45s var(--e-out)}
+  .niche:hover,.plan:hover,.stat:hover,.step:hover{transform:translateY(-6px);box-shadow:0 24px 50px -24px rgba(0,0,0,.8)}
+  .sells li:hover{transform:translateY(-3px);border-color:var(--accent)}
+  /* título entra palavra por palavra */
+  .hero h1 .w{display:inline-block;opacity:0;transform:translateY(.45em);transition:opacity .6s var(--e-out),transform .8s var(--e-out);transition-delay:calc(var(--i)*70ms + 120ms)}
+  .hero h1.on .w{opacity:1;transform:none}
+  /* monitor com o vídeo feito no Remotion */
+  .monitor{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/5;background:#000 url(video/hero-poster.jpg) center/cover;border:1px solid var(--line);box-shadow:0 40px 80px -30px rgba(0,0,0,.9),0 0 0 1px rgba(255,255,255,.03) inset}
+  .monitor.in{animation:float 7s var(--e-inout) .9s infinite alternate}
+  .monitor-vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .monitor-pill{position:absolute;left:16px;right:16px;bottom:16px;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 18px;border-radius:18px;background:rgba(18,17,16,.72);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.08);transition:transform .4s var(--e-spring),background .3s}
+  .monitor-pill:hover{transform:translateY(-3px);background:rgba(18,17,16,.86)}
+  .monitor-pill span{display:flex;flex-direction:column;line-height:1.25}
+  .monitor-pill small{color:var(--muted);font-size:13px}
+  .monitor-pill em{font-style:normal;font-weight:700;background:var(--accent);color:var(--ink);padding:9px 14px;border-radius:999px;white-space:nowrap}
+  @keyframes float{from{transform:translateY(0)}to{transform:translateY(-10px)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+  .wa-float{animation:bob 3.2s var(--e-inout) infinite;transition:transform .35s var(--e-spring)}
+  .wa-float:hover{animation:none;transform:scale(1.08)}
+  /* barra de progresso de leitura */
+  .progress{position:fixed;top:0;left:0;height:3px;width:100%;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--accent),var(--accent2));z-index:70;pointer-events:none}
+  header{transition:background .3s,box-shadow .3s}
+  header.scrolled{background:rgba(18,17,16,.95);box-shadow:0 10px 30px -20px rgba(0,0,0,.9)}
+  @media (max-width:900px){.monitor{aspect-ratio:16/11;max-height:420px}}
+  @media (prefers-reduced-motion:reduce){
+    .reveal,.hero h1 .w{opacity:1!important;transform:none!important;transition:none}
+    .marquee-track,.monitor,.wa-float{animation:none}
+    .monitor-vid{display:none}
+  }
 
   @media (max-width:960px){
     .hero-grid,.about{grid-template-columns:1fr}
@@ -208,6 +241,7 @@
 </head>
 <body>
 
+<div class="progress" aria-hidden="true"></div>
 <header>
   <div class="wrap nav">
     <a href="#" class="logo"><img src="img/logo.svg" alt="EDZ Films" height="40"></a>
@@ -249,19 +283,15 @@
           <a href="#trabalhos">Ver trabalhos</a> · <a class="js-wa" data-msg="Oi Eliel! Vi o site da EDZ Films e quero um orçamento." href="#">WhatsApp (11) 95268-9176</a></p>
         </div>
       </div>
-      <aside class="offer reveal">
-        <span class="tag">Mais pedido</span>
-        <h3>Reels Express</h3>
-        <p class="small">Com o material que você já tem</p>
-        <div class="price"><span class="now">R$ 600</span></div>
-        <p class="small">50% para reservar · 50% na aprovação da prévia</p>
-        <ul>
-          <li>4 Reels de até 60 s, prontos para postar</li>
-          <li>Cortes, legendas, trilha original e ajuste de cor</li>
-          <li>1 rodada de ajustes incluída</li>
-          <li>Entrega em até 48h após o material e o sinal</li>
-        </ul>
-        <a class="btn btn-primary js-wa" data-msg="Oi Eliel! Quero reservar o Reels Express (R$ 600)." href="#">Reservar minha vaga</a>
+      <aside class="monitor reveal" aria-label="Trabalhos da EDZ Films">
+        <video class="monitor-vid" autoplay muted loop playsinline preload="metadata" poster="video/hero-poster.jpg" aria-hidden="true">
+          <source src="video/hero.webm" type="video/webm">
+          <source src="video/hero.mp4" type="video/mp4">
+        </video>
+        <a class="monitor-pill js-wa" data-msg="Oi Eliel! Quero reservar o Reels Express (R$ 600)." href="#">
+          <span><b>Reels Express</b><small>4 Reels prontos em 48h</small></span>
+          <em>R$ 600 →</em>
+        </a>
       </aside>
     </div>
   </section>
@@ -601,6 +631,64 @@
   });
   vm.addEventListener("click", e => { if (e.target === vm || e.target.closest(".vclose")) fecharVideo(); });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && vm.classList.contains("open")) fecharVideo(); });
+
+  // ---------- movimento ----------
+  const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // título palavra por palavra (mantém o <em> com o degradê)
+  (() => {
+    const h = document.querySelector(".hero h1"); if (!h) return;
+    let i = 0;
+    const quebra = el => [...el.childNodes].forEach(n => {
+      if (n.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        n.textContent.split(/(\s+)/).forEach(p => {
+          if (!p) return;
+          if (/^\s+$/.test(p)) { frag.append(p); return; }
+          const s = document.createElement("span"); s.className = "w"; s.style.setProperty("--i", i++); s.textContent = p; frag.append(s);
+        });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1) quebra(n);
+    });
+    quebra(h);
+    requestAnimationFrame(() => requestAnimationFrame(() => h.classList.add("on")));
+  })();
+  // irmãos entram em sequência (60 ms entre cada)
+  document.querySelectorAll(".reveal").forEach(el => {
+    const irmaos = [...el.parentElement.children].filter(c => c.classList.contains("reveal"));
+    const k = irmaos.indexOf(el); if (k > 0) el.style.setProperty("--d", Math.min(k, 6) * 60 + "ms");
+  });
+  // contadores das estatísticas
+  (() => {
+    const fmt = (v, dec) => v.toFixed(dec).replace(".", ",");
+    const anima = b => {
+      const m = b.textContent.match(/^([\d.,]+)(.*)$/); if (!m || calmo) return;
+      const alvo = parseFloat(m[1].replace(",", ".")), dec = m[1].includes(",") ? 1 : 0, resto = m[2];
+      const t0 = performance.now(), dur = 1400;
+      const passo = t => {
+        const p = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - p, 4); // ease-out
+        b.textContent = fmt(alvo * e, dec) + resto;
+        if (p < 1) requestAnimationFrame(passo);
+      };
+      requestAnimationFrame(passo);
+    };
+    const io2 = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { anima(e.target); io2.unobserve(e.target); } }), { threshold: .6 });
+    document.querySelectorAll(".stat b").forEach(b => io2.observe(b));
+  })();
+  // barra de progresso + cabeçalho
+  (() => {
+    const bar = document.querySelector(".progress"), hd = document.querySelector("header");
+    let pend = false;
+    const upd = () => { pend = false; const h = document.documentElement, max = h.scrollHeight - innerHeight;
+      bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`; hd.classList.toggle("scrolled", scrollY > 20); };
+    addEventListener("scroll", () => { if (!pend) { pend = true; requestAnimationFrame(upd); } }, { passive: true });
+    upd();
+  })();
+  // vídeo do topo: só toca quando aparece; poupa dados no modo econômico
+  (() => {
+    const v = document.querySelector(".monitor-vid"); if (!v) return;
+    if (calmo || (navigator.connection && navigator.connection.saveData)) { v.removeAttribute("autoplay"); v.preload = "none"; v.remove(); return; }
+    new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? v.play().catch(() => {}) : v.pause())).observe(v);
+  })();
 </script>
 </body>
 </html>
